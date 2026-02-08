@@ -15,7 +15,7 @@ services:
 
   # 2. Java Backend
   java-api:
-    build: ./demo
+    build: ./medipay-backend
     ports:
       - "8080:8080"
     environment:

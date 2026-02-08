@@ -10,9 +10,9 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.example.demo</groupId>
-	<artifactId>demo</artifactId>
+	<artifactId>medipay-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>demo</name>
+	<name>medipay-backend</name>
 	<description>MediPay Backend</description>
 
 	<properties>
