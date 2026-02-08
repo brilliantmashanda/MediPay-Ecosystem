@@ -1,0 +1,19 @@
+### 1. Submit a New Claim
+POST http://localhost:8080/api/claims
+Content-Type: application/json
+
+{
+  "patientName": "Brilliant",
+  "patientSurname": "Mashanda",
+  "claimAmount": 2550.75,
+  "providerName": "Netcare Hospital",
+  "providerNo": "PRV-8877",
+  "effectiveEndDate": "2026-12-31T23:59:59"
+}
+
+### 2. Get All Claims
+GET http://localhost:8080/api/claims
+
+### 3. Update Status (This triggers your SQL Audit Log)
+# Note: Change the '1' to the ID of the claim you just created
+PUT http://localhost:8080/api/claims/1/status?status=APPROVED
