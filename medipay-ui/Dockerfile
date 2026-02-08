@@ -13,7 +13,12 @@ COPY . .
 RUN npm run build --configuration=production
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
-# Copy the built files from the previous stage
+
+# 1. Copy the custom config file
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# 2. Copy the built Angular files
 COPY --from=build /app/dist/medipay-ui/browser /usr/share/nginx/html
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

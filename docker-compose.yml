@@ -14,7 +14,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   # 2. Java Backend
-  java-api:
+  medipay-backend:
     build: ./medipay-backend
     ports:
       - "8080:8080"
@@ -46,7 +46,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - java-api
+      - medipay-backend
       - python-analytics
 
 volumes:

@@ -26,7 +26,7 @@ def get_data_from_db():
     conn.close()
     return df
 
-@app.route('/analytics/summary', methods=['GET'])
+@app.route('/summary', methods=['GET'])
 def get_summary():
     try:
         df = get_data_from_db()

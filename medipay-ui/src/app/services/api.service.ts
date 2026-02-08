@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private javaUrl = 'http://localhost:8080/api/claims';
-  private pythonUrl = 'http://localhost:5001/analytics/summary';
+  private javaUrl = '/api/claims'; 
+  private pythonUrl = '/analytics/summary';
 
   constructor(private http: HttpClient) { }
 
