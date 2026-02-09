@@ -25,6 +25,14 @@ def get_data_from_db():
     df = pd.read_sql_query(query, conn)
     conn.close()
     return df
+def calculate_summary(df):
+    return {
+        "total_claims": int(df.shape[0]),
+        "total_value": float(df['claim_amount'].sum()),
+        "avg_claim": float(df['claim_amount'].mean()),
+        "status_counts": df['status'].value_counts().to_dict(),
+        "top_providers": df['provider_name'].value_counts().head(3).to_dict()
+    }
 
 @app.route('/summary', methods=['GET'])
 def get_summary():
@@ -32,13 +40,7 @@ def get_summary():
         df = get_data_from_db()
         
         # Performance analytics using Pandas
-        summary = {
-            "total_claims": int(df.shape[0]),
-            "total_value": float(df['claim_amount'].sum()),
-            "avg_claim": float(df['claim_amount'].mean()),
-            "status_counts": df['status'].value_counts().to_dict(),
-            "top_providers": df['provider_name'].value_counts().head(3).to_dict()
-        }
+        summary = calculate_summary(df) 
         
         return jsonify(summary)
     except Exception as e:

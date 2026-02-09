@@ -12,6 +12,7 @@ import { interval } from 'rxjs';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  title = 'medipay-ui'; 
   claims: any[] = [];
   stats: any = null;
 

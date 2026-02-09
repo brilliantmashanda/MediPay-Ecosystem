@@ -1,4 +1,20 @@
+# Python
+venv/
+.pytest_cache/
+__pycache__/
+
+# Angular / Node
 node_modules/
-.env
-*.zip
+dist/
 .angular/
+
+# Java
+target/
+.gradle/
+.project
+.classpath
+.settings/
+
+*.zip
+.txt
+.env

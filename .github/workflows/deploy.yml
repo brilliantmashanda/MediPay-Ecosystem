@@ -1,7 +1,7 @@
 name: MediPay CD
 on:
   push:
-    branches: [ main ] # Runs every time you push to GitHub
+    branches: [ main ]
 
 jobs:
   deploy:
@@ -10,9 +10,9 @@ jobs:
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.AWS_HOST }}     # Your IP: 54.196.224.169
+          host: ${{ secrets.AWS_HOST }}
           username: ec2-user
-          key: ${{ secrets.AWS_SSH_KEY }}    # Your .pem file content
+          key: ${{ secrets.AWS_SSH_KEY }}
           script: |
             cd ~/MediPay-Ecosystem
             git pull origin main

@@ -2,6 +2,7 @@ package com.medipay.controller;
 
 import com.medipay.model.MedicalClaim;
 import com.medipay.repository.ClaimRepository;
+import com.medipay.service.ClaimService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,26 +10,27 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/claims")
-@CrossOrigin(origins = "*") // Allows your Angular app to talk to this later
+@CrossOrigin(origins = "*")
 public class ClaimController {
 
     @Autowired
-    private ClaimRepository claimRepository;
+    private ClaimService claimService;
 
     @GetMapping
     public List<MedicalClaim> getAllClaims() {
-        return claimRepository.findAll();
+        return claimService.getAllClaims();
     }
 
     @PostMapping
     public MedicalClaim submitClaim(@RequestBody MedicalClaim claim) {
-        return claimRepository.save(claim);
+        return claimService.saveClaim(claim);
     }
 
     @PutMapping("/{id}/status")
     public MedicalClaim updateStatus(@PathVariable Long id, @RequestParam String status) {
-        MedicalClaim claim = claimRepository.findById(id).orElseThrow();
-        claim.setStatus(status);
-        return claimRepository.save(claim); // This will trigger your SQL Audit Log!
+        if ("APPROVED".equalsIgnoreCase(status)) {
+            return claimService.approveClaim(id);
+        }
+        return null;
     }
 }
