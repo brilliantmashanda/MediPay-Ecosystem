@@ -1,0 +1,19 @@
+name: MediPay CD
+on:
+  push:
+    branches: [ main ] # Runs every time you push to GitHub
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to AWS EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_HOST }}     # Your IP: 54.196.224.169
+          username: ec2-user
+          key: ${{ secrets.AWS_SSH_KEY }}    # Your .pem file content
+          script: |
+            cd ~/MediPay-Ecosystem
+            git pull origin main
+            docker compose up -d --build
