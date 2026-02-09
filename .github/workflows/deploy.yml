@@ -15,5 +15,5 @@ jobs:
           key: ${{ secrets.AWS_SSH_KEY }}
           script: |
             cd ~/MediPay-Ecosystem
-            git pull origin main
+            git fetch --all && git reset --hard origin/main
             docker compose up -d --build
