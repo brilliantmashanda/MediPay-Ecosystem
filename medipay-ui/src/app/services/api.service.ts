@@ -23,7 +23,7 @@ export class ApiService {
 
   // Capture new claim in Java
   submitClaim(claim: any): Observable<any> {
-  return this.http.post('http://localhost:8080/api/claims', claim);
+  return this.http.post(this.javaUrl, claim); 
   }
   // Get data from Python
   getStats(): Observable<any> {
