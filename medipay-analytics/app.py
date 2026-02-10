@@ -2,18 +2,29 @@ import threading
 import time
 import stomp
 import os
-from flask import Flask, jsonify
+import logging 
+from flask import Flask, jsonify, send_file  # Added send_file
 import pandas as pd
 import psycopg2
 from flask_cors import CORS
 from dotenv import load_dotenv
 
-# Initialize Flask
+LOG_FILE = "analytics_events.log"
+
+# Configure logging to write to both the console AND a file
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHeader(LOG_FILE),
+        logging.StreamHandler()
+    ]
+)
+
 app = Flask(__name__)
 CORS(app)
 load_dotenv()
 
-# --- 1. CONFIGURATION ---
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "db"),       
@@ -24,13 +35,15 @@ DB_CONFIG = {
 }
 
 ACTIVEMQ_HOST = os.getenv("ACTIVEMQ_HOST", "activemq")
-ACTIVEMQ_PORT = int(os.getenv("ACTIVEMQ_PORT", 61613)) # STOMP port
+ACTIVEMQ_PORT = int(os.getenv("ACTIVEMQ_PORT", 61613)) 
 
 class ClaimsListener(stomp.ConnectionListener):
     """Listener class to handle messages received from ActiveMQ."""
     def on_message(self, frame):
-        print(f"\n[JMS RECEIVER] Message from Java: {frame.body}")
-        # Will add trigger a cache clear or log this to a file
+        logging.info(f"[JMS RECEIVER] Processing Claim from Java: {frame.body}")
+        
+    def on_error(self, frame):
+        logging.error(f"[JMS ERROR] {frame.body}")
 
 def start_jms_listener():
     """Background function to connect to ActiveMQ and listen for messages."""
@@ -42,13 +55,13 @@ def start_jms_listener():
         try:
             conn.connect(wait=True)
             conn.subscribe(destination='claims-queue', id=1, ack='auto')
-            print(f"Python Analytics: Connected to ActiveMQ at {ACTIVEMQ_HOST}:{ACTIVEMQ_PORT}")
+            logging.info(f"Python Analytics: Connected to ActiveMQ at {ACTIVEMQ_HOST}")
             connected = True
         except Exception as e:
-            print(f"Waiting for ActiveMQ... ({e})")
+            logging.warning(f"Waiting for ActiveMQ... ({e})")
             time.sleep(5) 
 
-# Start the listener in a background thread so it doesn't block Flask
+# Start listener
 jms_thread = threading.Thread(target=start_jms_listener, daemon=True)
 jms_thread.start()
 
@@ -61,10 +74,8 @@ def get_data_from_db():
     return df
 
 def calculate_summary(df):
-    """Main analytics logic using Pandas."""
     if df.empty:
         return {"message": "No data available"}
-        
     return {
         "total_claims": int(df.shape[0]),
         "total_value": float(df['claim_amount'].sum()),
@@ -81,9 +92,19 @@ def get_summary():
         summary = calculate_summary(df) 
         return jsonify(summary)
     except Exception as e:
+        logging.error(f"Error calculating summary: {e}")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/download-logs', methods=['GET'])
+def download_logs():
+    try:
+        if os.path.exists(LOG_FILE):
+            return send_file(LOG_FILE, as_attachment=True)
+        else:
+            return jsonify({"error": "Log file not found yet. Generate some activity first!"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    # host='0.0.0.0' is required for Docker to allow external access
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    logging.info("Starting MediPay Python Analytics Service...")
+    app.run(host='0.0.0.0', port=5001, debug=False) 
