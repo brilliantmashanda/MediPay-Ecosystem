@@ -49,3 +49,4 @@ psycopg2-binary
 pandas
 flask-cors
 python-dotenv
+stomp.py

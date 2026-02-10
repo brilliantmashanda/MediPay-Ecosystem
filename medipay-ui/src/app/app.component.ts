@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { ApiService } from './services/api.service';
 import { interval } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -26,12 +27,12 @@ export class AppComponent implements OnInit {
   };
 
   constructor(private api: ApiService) {}
-
-  ngOnInit() {
+  private pollingSub?: Subscription;
+   ngOnInit() {
     this.refreshData();
-    interval(30000).subscribe(() => {
-    this.refreshData();
-  });
+    this.pollingSub = interval(30000).subscribe(() => {
+      this.refreshData();
+    });
   }
 
   refreshData() {
@@ -63,5 +64,8 @@ export class AppComponent implements OnInit {
 
   approveClaim(id: number) {
     this.api.updateClaimStatus(id, 'APPROVED').subscribe(() => this.refreshData());
+  }
+   ngOnDestroy() {
+    this.pollingSub?.unsubscribe();
   }
 }

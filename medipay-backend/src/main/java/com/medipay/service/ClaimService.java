@@ -11,6 +11,8 @@ import java.util.List;
 public class ClaimService {
     @Autowired
     private ClaimRepository claimRepository;
+    @Autowired
+    private JmsTemplate jmsTemplate;
 
     public List<MedicalClaim> getAllClaims() {
         return claimRepository.findAll();
@@ -21,9 +23,14 @@ public class ClaimService {
     }
 
     public MedicalClaim approveClaim(Long id) {
-        MedicalClaim claim = claimRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Claim not found"));
+        MedicalClaim claim = claimRepository.findById(id).orElseThrow();
         claim.setStatus("APPROVED");
-        return claimRepository.save(claim);
+        MedicalClaim savedClaim = claimRepository.save(claim);
+
+        // Send message to Python Analytics asynchronously
+        String message = "Claim Approved: " + savedClaim.getId() + " Amount: " + savedClaim.getClaimAmount();
+        jmsTemplate.convertAndSend("claims-queue", message);
+
+        return savedClaim;
     }
 }

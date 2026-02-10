@@ -47,6 +47,13 @@ services:
     depends_on:
       - medipay-backend
       - python-analytics
+    
+  activemq:
+    image: rmohr/activemq:latest
+    ports:
+      - "61616:61616" # JMS Port
+      - "8161:8161"   # Web Console (Admin UI)
+      - "61613:61613" # STOMP Port (For Python to talk to JMS)  
 
 volumes:
   postgres_data:
