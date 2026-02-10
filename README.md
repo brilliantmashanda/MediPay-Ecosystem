@@ -24,7 +24,7 @@ DevOps	Docker, Docker Compose, GitHub Actions, AWS EC2
 🧪 Testing Strategy
 Backend: 100% service-layer coverage using JUnit 5.
 Frontend: Unit testing with Karma/Jasmine, utilizing provideHttpClientTesting for robust API mocking.
-Analytics: Integration testing of data frames using PyTest.
+Analytics: Integration testing of data frames using PyTest.  
 
 📬 Contact
 Brilliant Mashanda - Senior Java Developer
