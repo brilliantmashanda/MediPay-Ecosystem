@@ -3,6 +3,7 @@ package com.medipay.service;
 import com.medipay.model.MedicalClaim;
 import com.medipay.repository.ClaimRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -2,13 +2,13 @@ package com.medipay.service;
 
 import com.medipay.model.MedicalClaim;
 import com.medipay.repository.ClaimRepository;
-// --- JUNIT 5 IMPORTS (MAKE SURE THESE ARE CORRECT) ---
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-// --- MOCKITO JUNIT EXTENSION ---
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+// IMPORT THIS:
+import org.springframework.jms.core.JmsTemplate;
 
 import java.util.Optional;
 
@@ -22,8 +22,12 @@ public class ClaimServiceTest {
     @Mock
     private ClaimRepository claimRepository;
 
+    @Mock
+    private JmsTemplate jmsTemplate;
+
     @InjectMocks
     private ClaimService claimService;
+
     @Test
     public void testApproveClaim() {
         MedicalClaim mockClaim = new MedicalClaim();
