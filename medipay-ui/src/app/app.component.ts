@@ -1,71 +1,17 @@
-import { Component, OnInit, OnDestroy  } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; 
-import { ApiService } from './services/api.service';
-import { interval } from 'rxjs';
-import { Subscription } from 'rxjs';
+import { Component } from '@angular/core';
+import { RouterOutlet } from "@angular/router";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule], 
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  imports: [RouterOutlet], 
+  template: `
+    <div style="padding: 20px; font-family: sans-serif;">
+      <h1>MediPay Admin Dashboard</h1>
+      <router-outlet></router-outlet>
+    </div>
+  `
 })
-export class AppComponent implements OnInit {
-  title = 'medipay-ui'; 
-  claims: any[] = [];
-  stats: any = null;
-
-  newClaim = {
-    patientName: '',
-    patientSurname: '',
-    claimAmount: 0,
-    status: 'PENDING' ,
-    providerName: '', 
-    providerNo: ''
-  };
-
-  constructor(private api: ApiService) {}
-  private pollingSub?: Subscription;
-   ngOnInit() {
-    this.refreshData();
-    this.pollingSub = interval(30000).subscribe(() => {
-      this.refreshData();
-    });
-  }
-
-  refreshData() {
-    this.api.getClaims().subscribe(data => this.claims = data);
-    this.api.getStats().subscribe(data => this.stats = data);
-  }
-
-  saveClaim() {
-    if (this.newClaim.patientName && this.newClaim.claimAmount > 0) {
-      this.api.submitClaim(this.newClaim).subscribe({
-        next: () => {
-          this.refreshData(); 
-          this.resetForm();
-        },
-        error: (err) => console.error("Error saving claim:", err)
-      });
-    }
-  }
-  resetForm() {
-    this.newClaim = {
-      patientName: '',
-      patientSurname: '',
-      claimAmount: 0,
-      status: 'PENDING',
-      providerName: '',
-      providerNo: ''
-    };
-  }
-
-  approveClaim(id: number) {
-    this.api.updateClaimStatus(id, 'APPROVED').subscribe(() => this.refreshData());
-  }
-   ngOnDestroy() {
-    this.pollingSub?.unsubscribe();
-  }
+export class AppComponent {
+  title = 'medipay-ui';
 }
